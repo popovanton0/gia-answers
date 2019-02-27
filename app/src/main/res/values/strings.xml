@@ -1,0 +1,99 @@
+<resources>
+    <string name="app_name">Larin\'s GIA</string>
+    <string name="title_ege">Larin\'s EGE</string>
+    <string name="title_oge">Larin\'s OGE</string>
+    <string name="part2_answers_url" translatable="false">http://alexlarin.net/ege/YEAR/trvarVAR_NUMBER.png</string>
+    <string name="variant_ege">EGE Variant #</string>
+    <string name="variant_oge">OGE Variant #</string>
+    <string name="ege_variant_before"> EGE Variant</string>
+    <string name="oge_variant_before"> OGE Variant</string>
+    <string name="year">Year</string>
+    <string name="get_answers">Get answers</string>
+    <string name="no_var_number_error">Write variant number</string>
+    <string name="share_menu_item_title">Share</string>
+    <string name="larin">Larin</string>
+    <string name="part2_share">Part 2:</string>
+    <string name="share_dialog">Share via</string>
+    <string name="description">This is an app for easy and convenient viewing of EGE and OGE answers</string>
+    <string name="version_text">Version</string>
+    <string name="author_title">Author</string>
+    <string name="author_name">Anton Popov</string>
+    <string name="author_profession">Android developer</string>
+    <string name="github">Developer on GitHub</string>
+    <string name="author_on_github_url" translatable="false">https://github.com/popovanton0</string>
+    <string name="answers">Answers</string>
+    <string name="part1">Part 1</string>
+    <string name="part2">Part 2</string>
+    <string name="variant_search">Search for variant #</string>
+    <string name="varinat_not_found">Variant not found</string>
+    <string name="variants_loading_error">Error while loading variants happened</string>
+    <string name="error_title">Error</string>
+    <string name="error_details">Details</string>
+    <string name="delete_confirmation">Are you sure you want do delete the variant?</string>
+    <string name="deletion_successful">Deletion successful</string>
+    <string name="deletion_failed">Deletion failed</string>
+    <string name="offline">Download</string>
+    <string name="variant_saved">Variant downloaded</string>
+    <string name="variant_not_saved">Variant not downloaded</string>
+    <string name="no_internet">No internet connection</string>
+    <string name="used_space">Used space</string>
+    <string name="total_used_space">Total</string>
+    <string name="loading_title">Loading</string>
+    <string name="searching_message">Searching …</string>
+    <string name="variants_search_error">Error while searching for variant happened</string>
+    <string name="drawer_item_ege_variants">EGE</string>
+    <string name="drawer_item_oge_variants">OGE</string>
+    <string name="drawer_item_downloaded_ege_variants">Offline EGE</string>
+    <string name="drawer_item_downloaded_oge_variants">Offline OGE</string>
+    <string name="drawer_item_about">About</string>
+    <string name="drawer_item_alice">Skill in Yandex.Alice</string>
+    <string name="pdf_loading_error">Error occurred while downloading variant pdf</string>
+    <string name="part2Answers_downloading_error">Error occurred while downloading answers to part 2</string>
+    <string name="about_icons_title">Icons</string>
+    <string name="about_launcher_icon_license" translatable="false">Icon made by Freepik from www.flaticon.com</string>
+    <string name="about_launcher_icon_description">App icon</string>
+    <string name="part_2_answers_blur">Press to show answers</string>
+    <string name="delete_all_title">Deletion of all variants</string>
+    <string name="delete_all_message">Are you sure you want to delete all downloaded variants?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="no_variants">No variants</string>
+    <string name="video_button_text"> Video answer (only russian)</string>
+    <string name="video_answers_ege_playlist_url" translatable="false">https://www.youtube.com/playlist?list=PL-JN5AaKyvpUP0A99KFOMYiTGwzNNnLSt</string>
+    <string name="video_answers_oge_playlist_url" translatable="false">https://www.youtube.com/playlist?list=PL-JN5AaKyvpUFGsvX91F_1wMf8DR9SkAT</string>
+    <string name="yandex_dialogs_skill_url" translatable="false">https://dialogs.yandex.ru/store/skills/8d5f16a3-ege-larina-po-matematike</string>
+    <string name="welcome_page_description">Hi! This app enables you to view and download Alex Larin`s EGE and OGE variants easily.</string>
+    <string name="nav_drawer_page_title">Navigation drawer</string>
+    <string name="nav_drawer_page_desciption">In the navigation drawer you can choose between EGE and OGE variants. Also you can see which variants were downloaded.</string>
+    <string name="download_and_share_page_title">Download and share</string>
+    <string name="download_and_share_page_description">You can download a variant and it will be available without internet connection. You can also share a variant with others.</string>
+    <string name="user_params_page_title">Who are you?</string>
+    <string name="settings_user_class_title">Your grade</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="user_params_self_name">I am a</string>
+    <string name="user_class_summary">This value increments every 1st of June</string>
+    <string-array name="list_user_role">
+        <item>student</item>
+        <item>teacher</item>
+    </string-array>
+    <string-array name="list_user_role_values">
+        <item>STUDENT</item>
+        <item>TEACHER</item>
+    </string-array>
+    <string-array name="list_user_class">
+        <item>of the 8th grade</item>
+        <item>of the 9th grade</item>
+        <item>of the 10th grade</item>
+        <item>of the 11th grade</item>
+    </string-array>
+    <string-array name="list_user_class_values">
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+    </string-array>
+    <string name="privacy_policy">Privacy policy</string>
+    <string name="privacy_policy_url" translatable="false">https://gia-answers.firebaseapp.com/privacy-policy.html</string>
+    <string name="terms_and_conditions">Terms and conditions</string>
+    <string name="terms_and_conditions_url" translatable="false">https://gia-answers.firebaseapp.com/terms-and-conditions.html</string>
+</resources>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ГИА Ларина</string>
+    <string name="title_ege">ЕГЭ Ларина</string>
+    <string name="title_oge">ОГЭ Ларина</string>
+    <string name="variant_ege">Вариант ЕГЭ № </string>
+    <string name="variant_oge">Вариант ОГЭ № </string>
+    <string name="ege_variant_before"> Вариант ЕГЭ</string>
+    <string name="oge_variant_before"> Вариант ОГЭ</string>
+    <string name="year">Год</string>
+    <string name="get_answers">Ответы</string>
+    <string name="no_var_number_error">Укажите номер варианта</string>
+    <string name="share_menu_item_title">Поделиться</string>
+    <string name="part2_share">Часть 2:</string>
+    <string name="share_dialog">Поделиться через</string>
+    <string name="larin">Ларин</string>
+    <string name="description">Это приложение для удобного просмотра ответов на варианты ЕГЭ и ОГЭ Александра Ларина</string>
+    <string name="version_text">Версия</string>
+    <string name="author_title">Автор</string>
+    <string name="author_name">Антон Попов</string>
+    <string name="author_profession">Android разработчик</string>
+    <string name="github">Разработчик на GitHub</string>
+    <string name="answers">Ответы</string>
+    <string name="part1">Часть 1</string>
+    <string name="part2">Часть 2</string>
+    <string name="variant_search">Найти вариант №</string>
+    <string name="varinat_not_found">Вариант не найден</string>
+    <string name="variants_loading_error">Произошла ошибка во время загрузки вариантов</string>
+    <string name="error_title">Ошибка</string>
+    <string name="error_details">Подробно</string>
+    <string name="delete_confirmation">Вы действительно хотите удалить вариант?</string>
+    <string name="deletion_successful">Удаление успешно</string>
+    <string name="deletion_failed">Удаление неудачно</string>
+    <string name="offline">Скачать</string>
+    <string name="variant_saved">Вариант скачан</string>
+    <string name="variant_not_saved">Вариант не скачан</string>
+    <string name="no_internet">Нет интернет-соединения</string>
+    <string name="used_space">Использованное место</string>
+    <string name="total_used_space">Всего</string>
+    <string name="loading_title">Загрузка</string>
+    <string name="searching_message">Поиск …</string>
+    <string name="variants_search_error">Произошла ошибка во время поиска варианта</string>
+    <string name="drawer_item_ege_variants">ЕГЭ</string>
+    <string name="drawer_item_oge_variants">ОГЭ</string>
+    <string name="drawer_item_downloaded_ege_variants">Оффлайн ЕГЭ</string>
+    <string name="drawer_item_downloaded_oge_variants">Оффлайн ОГЭ</string>
+    <string name="drawer_item_about">О программе</string>
+    <string name="drawer_item_alice">Навык в Яндекс.Алиса</string>
+    <string name="pdf_loading_error">Ошибка при скачивании pdf варианта</string>
+    <string name="part2Answers_downloading_error">Ошибка при скачивании ответов на 2 часть</string>
+    <string name="about_icons_title">Иконки</string>
+    <string name="about_launcher_icon_description">Иконка приложения</string>
+    <string name="part_2_answers_blur">Нажмите, чтобы показать ответы</string>
+    <string name="delete_all_title">Удаление всех вариантов</string>
+    <string name="delete_all_message">Вы уверены, что хотите удалить все скачанные варианты?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="no_variants">Нет вариантов</string>
+    <string name="video_button_text"> Видеоответ</string>
+    <string name="welcome_page_description">Это приложение позволяет удобно просматривать и скачивать ответы на варианты ЕГЭ и ОГЭ от Александра Ларина</string>
+    <string name="nav_drawer_page_title">Боковое меню</string>
+    <string name="nav_drawer_page_desciption">В боковом меню можно выбрать между вариантами ЕГЭ и ОГЭ. Также можно посмотреть, какие варианты скачаны.</string>
+    <string name="download_and_share_page_title">Скачать и поделиться</string>
+    <string name="download_and_share_page_description">Доступно скачивание варианта, чтобы его можно было просматривать без подключения к интернету. Также можно поделиться вариантом с другими.</string>
+    <string name="user_params_page_title">Кто вы?</string>
+    <string name="settings_user_class_title">Ваш класс</string>
+    <string name="title_activity_settings">Настройки</string>
+    <string name="user_params_self_name">Я</string>
+    <string name="user_class_summary">Это значение увеличивается каждое 1 июня</string>
+    <string-array name="list_user_role">
+        <item>ученик</item>
+        <item>учитель</item>
+    </string-array>
+    <string-array name="list_user_class">
+        <item>8 класса</item>
+        <item>9 класса</item>
+        <item>10 класса</item>
+        <item>11 класса</item>
+    </string-array>
+    <string name="privacy_policy">Политика конфиденциальности</string>
+    <string name="terms_and_conditions">Условия использования</string>
+</resources>

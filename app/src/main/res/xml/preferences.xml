@@ -1,0 +1,20 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:defaultValue="1"
+        android:entries="@array/list_user_role"
+        android:entryValues="@array/list_user_role_values"
+        android:key="user_role"
+        android:title="@string/user_params_page_title"
+        android:icon="@drawable/account_question"/>
+
+    <ListPreference
+        android:defaultValue="9"
+        android:entries="@array/list_user_class_values"
+        android:entryValues="@array/list_user_class_values"
+        android:key="user_class"
+        android:title="@string/settings_user_class_title"
+        android:summary="@string/user_class_summary"
+        android:icon="@drawable/google_classroom"/>
+
+</PreferenceScreen>
