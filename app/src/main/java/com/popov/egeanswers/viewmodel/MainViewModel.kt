@@ -130,6 +130,7 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
             when (pos) {
                 1 -> fragment.postValue(3)
                 2 -> fragment.postValue(4)
+                else -> fragment.postValue(pos)
             }
             noInternetSnackbar.sendAction(0)
         }
