@@ -20,6 +20,7 @@ import co.zsmb.materialdrawerkt.draweritems.badgeable.secondaryItem
 import co.zsmb.materialdrawerkt.draweritems.divider
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.materialdrawer.Drawer
+import com.popov.egeanswers.BuildConfig
 import com.popov.egeanswers.R
 import com.popov.egeanswers.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -118,7 +119,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             secondaryItem(R.string.title_activity_settings) { icon = R.drawable.ic_settings_grey_600; selectable = false }
             secondaryItem(R.string.drawer_item_alice) { icon = R.drawable.ic_keyboard_voice_grey_600; selectable = false }
             secondaryItem(R.string.drawer_item_about) { icon = R.drawable.ic_info_outline_grey_24dp; selectable = false }
-            // if (BuildConfig.DEBUG) secondaryItem("Get SP") { icon = R.drawable.ic_bug_report_grey_600; selectable = false }
+            if (BuildConfig.DEBUG) secondaryItem("Get SP") { icon = R.drawable.ic_bug_report_grey_600; selectable = false }
         }
 
         m.getFragmentLiveData().observe(this, Observer {
