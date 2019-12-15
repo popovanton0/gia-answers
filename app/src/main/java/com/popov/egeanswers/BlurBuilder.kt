@@ -1,6 +1,6 @@
 package com.popov.egeanswers
 
-import android.support.v8.renderscript.*
+import androidx.renderscript.*
 import android.content.Context
 import android.graphics.Bitmap
 

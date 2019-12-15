@@ -1,8 +1,8 @@
 package com.popov.egeanswers
 
 import android.content.Context
-import android.support.multidex.MultiDexApplication
-import android.support.v7.app.AppCompatDelegate
+import androidx.multidex.MultiDexApplication
+import androidx.appcompat.app.AppCompatDelegate
 import com.popov.egeanswers.dbMigrations.Migration11
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher

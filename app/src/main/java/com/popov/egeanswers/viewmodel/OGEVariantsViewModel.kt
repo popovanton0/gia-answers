@@ -1,11 +1,11 @@
 package com.popov.egeanswers.viewmodel
 
 import android.app.Application
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import android.os.Bundle
-import android.support.annotation.MainThread
+import androidx.annotation.MainThread
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.ActionLiveData
 import com.popov.egeanswers.LarinApi

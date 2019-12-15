@@ -1,8 +1,8 @@
 package com.popov.egeanswers.viewmodel
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.ActionLiveData
 import com.popov.egeanswers.model.UserType

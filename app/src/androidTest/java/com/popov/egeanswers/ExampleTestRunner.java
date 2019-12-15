@@ -1,8 +1,8 @@
 package com.popov.egeanswers;
 
 import android.os.Bundle;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnitRunner;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.runner.AndroidJUnitRunner;
 import com.linkedin.android.testbutler.TestButler;
 
 public class ExampleTestRunner extends AndroidJUnitRunner {

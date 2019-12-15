@@ -1,8 +1,8 @@
 package com.popov.egeanswers.ui
 
 import android.app.ActivityManager
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.graphics.Bitmap
@@ -10,12 +10,12 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED
-import android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED
-import android.support.v4.content.res.ResourcesCompat
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+import androidx.core.content.res.ResourcesCompat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -119,6 +119,7 @@ class EGEVariantActivity : AppCompatActivity() {
                 val unBlurredImage = m.getPart2AnswersBytesLiveData().value
                         ?: return@OnClickListener // is not possible
                 val unBlurredImageBitmap = BitmapFactory.decodeByteArray(unBlurredImage, 0, unBlurredImage.size)
+                        ?: return@OnClickListener
 
                 if (isBlurring) {
                     val blurredImageBitmap = BlurBuilder.blur(this, unBlurredImageBitmap)
@@ -140,6 +141,7 @@ class EGEVariantActivity : AppCompatActivity() {
             part2answersImageView.setOnClickListener { }
 
             val unBlurredImageBitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                    ?: return@Observer
             val blurredImageBitmap = BlurBuilder.blur(this, unBlurredImageBitmap)
             setImageWithAnimation(part2answersImageView, blurredImageBitmap) {
                 part2answersImageView.setOnClickListener(onClick)
@@ -163,7 +165,7 @@ class EGEVariantActivity : AppCompatActivity() {
             varLoadingProgressBar.visibility = View.GONE
         })
 
-        videoButton.setCompoundDrawablesWithIntrinsicBounds(resources.getDrawable(R.drawable.ic_play_circle_green), null, null, null )
+        videoButton.setCompoundDrawablesWithIntrinsicBounds(resources.getDrawable(R.drawable.ic_play_circle_green), null, null, null)
         videoButton.setOnClickListener {
             val bundle = Bundle()
             bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "ege-video")
@@ -218,7 +220,7 @@ class EGEVariantActivity : AppCompatActivity() {
         fun sendAnswers(answers: String) = m.setPart1Answers(answers.split(';'))
     }
 
-    private fun setImageWithAnimation(imageView: ImageView, bitmap: Bitmap, onSetted: () -> Unit) {
+    private fun setImageWithAnimation(imageView: ImageView, bitmap: Bitmap, onSet: () -> Unit) {
         val animOut = AnimationUtils.loadAnimation(this, android.R.anim.fade_out)
         val animIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in)
         //animIn.duration = 0
@@ -231,7 +233,7 @@ class EGEVariantActivity : AppCompatActivity() {
                     override fun onAnimationStart(animation: Animation) {}
                     override fun onAnimationRepeat(animation: Animation) {}
                     override fun onAnimationEnd(animation: Animation) {
-                        onSetted()
+                        onSet()
                     }
                 })
                 imageView.startAnimation(animIn)

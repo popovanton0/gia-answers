@@ -2,8 +2,9 @@ package com.popov.egeanswers.ui
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.support.v7.preference.ListPreference
-import android.support.v7.preference.PreferenceFragmentCompat
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
 import com.popov.egeanswers.R
 import com.popov.egeanswers.model.UserType
 import org.jetbrains.anko.defaultSharedPreferences
@@ -24,10 +25,10 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     }
 
     override fun onSharedPreferenceChanged(sp: SharedPreferences, key: String) {
-        val preference = findPreference(key)
+        val preference = findPreference<Preference>(key)
         if (preference is ListPreference) {
             if (preference.key == "user_role") {
-                findPreference("user_class")?.isEnabled = preference.value != UserType.TEACHER.name
+                findPreference<Preference>("user_class")?.isEnabled = preference.value != UserType.TEACHER.name
                 /*if (preference.value == UserType.STUDENT.name)
                     if (findPreference("user_class") == null)
                         sp.edit()

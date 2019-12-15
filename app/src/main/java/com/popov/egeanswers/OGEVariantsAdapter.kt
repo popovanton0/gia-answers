@@ -1,13 +1,15 @@
 package com.popov.egeanswers
 
+import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.CardView
-import android.support.v7.widget.RecyclerView
+import androidx.cardview.widget.CardView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.model.VariantUI
 import com.popov.egeanswers.ui.OGEVariantActivity
@@ -15,7 +17,7 @@ import org.jetbrains.anko.support.v4.startActivityForResult
 import java.text.SimpleDateFormat
 import java.util.*
 
-class OGEVariantsAdapter(private val fragment: android.support.v4.app.Fragment, private var items: MutableList<VariantUI>) : RecyclerView.Adapter<OGEVariantsAdapter.ViewHolder>() {
+class OGEVariantsAdapter(private val fragment: Fragment, private var items: MutableList<VariantUI>) : RecyclerView.Adapter<OGEVariantsAdapter.ViewHolder>() {
 
     private val firebaseAnalytics = FirebaseAnalytics.getInstance(fragment.context!!)
 
@@ -55,7 +57,12 @@ class OGEVariantsAdapter(private val fragment: android.support.v4.app.Fragment, 
             bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "oge")
             firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
 
-            fragment.startActivityForResult<OGEVariantActivity>(0, "varNumber" to variant.number, "varYear" to variant.year)
+            val intent = Intent(fragment.context, OGEVariantActivity::class.java)
+            val options = Bundle().apply {
+                putInt("varNumber", variant.number)
+                putInt("varYear", variant.year)
+            }
+            fragment.startActivityForResult(intent, 0, options)
         }
     }
 

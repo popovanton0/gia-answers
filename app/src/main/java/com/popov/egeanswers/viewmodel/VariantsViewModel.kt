@@ -1,9 +1,9 @@
 package com.popov.egeanswers.viewmodel
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
-import android.support.annotation.MainThread
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.annotation.MainThread
 import com.popov.egeanswers.ActionLiveData
 import com.popov.egeanswers.model.VariantUI
 

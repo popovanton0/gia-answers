@@ -2,7 +2,7 @@ package com.popov.egeanswers.ui
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.R
 import com.popov.egeanswers.model.UserType
@@ -47,7 +47,7 @@ class SettingsActivity : AppCompatActivity() {
                 if (userType == UserType.STUDENT.name) sp.getString("user_class", "")!!
                 else ""
         val userClassSetDate = if (userType == UserType.STUDENT.name) {
-            if (this.userClass == userClass) sp.getString("user_class_set_date", "")
+            if (this.userClass == userClass) sp.getString("user_class_set_date", "")!!
             else Calendar.getInstance().timeInMillis.toString()
         } else ""
 
