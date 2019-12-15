@@ -76,7 +76,7 @@
         android:background="@android:color/white"
         android:orientation="vertical"
         app:behavior_peekHeight="60dp"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">u
 
         <LinearLayout
             android:id="@+id/answersPanel"
