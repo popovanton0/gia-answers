@@ -7,14 +7,11 @@ import androidx.lifecycle.Observer
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.ActionLiveData
-import com.popov.egeanswers.larinApi.LarinApi
+import com.popov.egeanswers.MyApp.Companion.getOgeApi
 import com.popov.egeanswers.R
 import com.popov.egeanswers.dao.LarinOGEVariantDao
-import com.popov.egeanswers.larinApi.OgeApi
 import com.popov.egeanswers.model.LarinOGEVariant
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.toast
 import java.util.*
@@ -36,7 +33,7 @@ class OGEVariantViewModel(
     private val answers = MutableLiveData<List<String>>()
 
     private val dao = LarinOGEVariantDao()
-    private val api = OgeApi()
+    private val api = app.getOgeApi()
 
     private var variant: LarinOGEVariant? = null
 
@@ -109,14 +106,14 @@ class OGEVariantViewModel(
     }
 
     fun offlineButton() {
-        GlobalScope.launch(Dispatchers.Main, CoroutineStart.DEFAULT) {
+        viewModelScope.launch(Dispatchers.Main) {
             if (variant == null) {
                 try {
                     if (pdfBytes.value == null || answers.value!!.isEmpty()) {
                         downloadDone.sendAction(false)
                         return@launch
                     }
-                    val year = api.getYear(varNumber, Calendar.getInstance().get(Calendar.YEAR))
+                    val year = api.getYear(varNumber, Calendar.getInstance().get(Calendar.YEAR) + 1)
                     variant = dao.createVariant(
                             number = varNumber,
                             year = year,

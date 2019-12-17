@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.model.VariantUI
 import com.popov.egeanswers.ui.OGEVariantActivity
-import org.jetbrains.anko.support.v4.startActivityForResult
 import java.text.SimpleDateFormat
 import java.util.*
 

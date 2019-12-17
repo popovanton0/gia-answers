@@ -1,18 +1,18 @@
 package com.popov.egeanswers
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.cardview.widget.CardView
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.model.VariantUI
 import com.popov.egeanswers.ui.EGEVariantActivity
-import org.jetbrains.anko.support.v4.startActivityForResult
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -56,7 +56,11 @@ class EGEVariantsAdapter(private val fragment: Fragment, private var items: Muta
             bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "ege")
             firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
 
-            fragment.startActivityForResult<EGEVariantActivity>(0, "varNumber" to variant.number, "varYear" to variant.year)
+            val intent = Intent(fragment.context, EGEVariantActivity::class.java).apply {
+                putExtra("varNumber", variant.number)
+                putExtra("varYear", variant.year)
+            }
+            fragment.startActivityForResult(intent, 0)
         }
     }
 

@@ -14,24 +14,20 @@ import android.os.Build
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.*
 import co.zsmb.materialdrawerkt.builders.accountHeader
 import co.zsmb.materialdrawerkt.builders.drawer
 import co.zsmb.materialdrawerkt.draweritems.badgeable.primaryItem
 import co.zsmb.materialdrawerkt.draweritems.badgeable.secondaryItem
 import co.zsmb.materialdrawerkt.draweritems.divider
-import co.zsmb.materialdrawerkt.draweritems.switchable.switchItem
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.materialdrawer.Drawer
 import com.popov.egeanswers.BuildConfig
 import com.popov.egeanswers.R
-import com.popov.egeanswers.larinApi.LarinApi
 import com.popov.egeanswers.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.*
 import java.util.*
-import kotlin.error
 
 class MainActivity : AppCompatActivity(), AnkoLogger {
 

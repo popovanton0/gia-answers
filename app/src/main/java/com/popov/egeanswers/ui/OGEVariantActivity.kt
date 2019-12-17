@@ -2,8 +2,6 @@ package com.popov.egeanswers.ui
 
 import android.annotation.SuppressLint
 import android.app.ActivityManager
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
@@ -11,21 +9,22 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
-import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
-import androidx.core.content.res.ResourcesCompat
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.GridLayoutManager
 import com.github.barteksc.pdfviewer.PDFView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.AnswersAdapter
 import com.popov.egeanswers.R
-import com.popov.egeanswers.util.nightMode
 import com.popov.egeanswers.viewmodel.OGEVariantViewModel
 import com.popov.egeanswers.viewmodel.VariantViewModelFactory
 import kotlinx.android.synthetic.main.activity_oge_variant.*
@@ -83,7 +82,10 @@ class OGEVariantActivity : AppCompatActivity() {
             //mPdfView.nightMode(isDarkMode)
             mPdfView.recycle()
             mPdfView.fromBytes(it)
-                    .onLoad { varLoadingProgressBar.visibility = View.GONE }
+                    .onRender {
+                        varLoadingProgressBar.visibility = View.GONE
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) reportFullyDrawn()
+                    }
                     /*.onRender { _, _, _ ->
                         mPdfView.apply { if (width / optimalPageWidth > zoom) fitToWidth() }
                     }

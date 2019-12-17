@@ -8,15 +8,12 @@ import androidx.lifecycle.Observer
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.ActionLiveData
-import com.popov.egeanswers.larinApi.LarinApi
+import com.popov.egeanswers.MyApp.Companion.getEgeApi
 import com.popov.egeanswers.R
 import com.popov.egeanswers.dao.LarinEGEVariantDao
-import com.popov.egeanswers.larinApi.EgeApi
 import com.popov.egeanswers.larinApi.LarinApi.Companion.baseUrl
 import com.popov.egeanswers.model.LarinEGEVariant
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.toast
 import java.util.*
@@ -40,7 +37,7 @@ class EGEVariantViewModel(private val app: Application,
     private val part2AnswersBytes = MutableLiveData<ByteArray>()
 
     private val dao = LarinEGEVariantDao()
-    private val api = EgeApi()
+    private val api = app.getEgeApi()
 
     private var variant: LarinEGEVariant? = null
 

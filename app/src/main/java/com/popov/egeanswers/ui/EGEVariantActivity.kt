@@ -93,7 +93,10 @@ class EGEVariantActivity : AppCompatActivity() {
             //mPdfView.nightMode(isDarkMode)
             mPdfView.recycle()
             mPdfView.fromBytes(it)
-                    .onLoad { varLoadingProgressBar.visibility = View.GONE }
+                    .onRender {
+                        varLoadingProgressBar.visibility = View.GONE
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) reportFullyDrawn()
+                    }
                     /*.onRender { _, _, _ ->
                         mPdfView.apply { if (width / optimalPageWidth > zoom) fitToWidth() }
                     }

@@ -8,20 +8,20 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.popov.egeanswers.ActionLiveData
 import com.popov.egeanswers.BuildConfig
-import com.popov.egeanswers.larinApi.LarinApi
+import com.popov.egeanswers.MyApp.Companion.getEgeApi
+import com.popov.egeanswers.MyApp.Companion.getOgeApi
 import com.popov.egeanswers.R
-import com.popov.egeanswers.larinApi.EgeApi
-import com.popov.egeanswers.larinApi.OgeApi
 import com.popov.egeanswers.ui.EGEVariantActivity
 import com.popov.egeanswers.ui.OGEVariantActivity
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.connectivityManager
 import org.jetbrains.anko.defaultSharedPreferences
@@ -35,8 +35,8 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
     val noInternetSnackbar = ActionLiveData<Byte>()
     val betaDialog = ActionLiveData<Byte>()
     val startIntro = ActionLiveData<Byte>()
-    private val egeApi = EgeApi()
-    private val ogeApi = OgeApi()
+    private val egeApi = app.getEgeApi()
+    private val ogeApi = app.getOgeApi()
     private var sp = app.defaultSharedPreferences
     private val egeVarsOnlineVM by lazy { EGEVariantsViewModel(false, app) }
     private val egeVarsOfflineVM by lazy { EGEVariantsViewModel(true, app) }
@@ -152,11 +152,11 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
             val varNumberEGE: Int = try {
                 yearOfVar = currentYear + 1
                 val latestVarNumber = egeApi.getLatestVarNumber(currentYear + 1)
-                if (latestVarNumber == 0) throw Exception()
+                check(latestVarNumber != 0)
                 latestVarNumber
             } catch (e: Exception) {
                 yearOfVar = currentYear
-                egeApi.getLatestVarNumber(currentYear)
+                runCatching { egeApi.getLatestVarNumber(currentYear) }.getOrDefault(0)
             }
 
             if (varNumberEGE == 0) return

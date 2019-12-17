@@ -1,26 +1,27 @@
 package com.popov.egeanswers.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.Observer
 import android.os.Bundle
 import androidx.annotation.MainThread
+import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.popov.egeanswers.larinApi.LarinApi
+import com.popov.egeanswers.MyApp.Companion.getOgeApi
 import com.popov.egeanswers.R
 import com.popov.egeanswers.dao.LarinOGEVariantDao
-import com.popov.egeanswers.larinApi.OgeApi
+import com.popov.egeanswers.larinApi.LarinApi
 import com.popov.egeanswers.model.LarinOGEVariant
 import com.popov.egeanswers.model.VariantType
 import com.popov.egeanswers.model.VariantUI
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.collections.forEachReversedByIndex
 import java.util.*
 
 class OGEVariantsViewModel(private val isOfflineOnly: Boolean, private val app: Application) : VariantsViewModel(isOfflineOnly, app) {
 
     private val dao = LarinOGEVariantDao()
-    override val api = OgeApi()
+    override val api = app.getOgeApi()
 
     private val offlineVars = dao.getAllLiveData()
 

@@ -20,6 +20,7 @@ buildscript {
         classpath "io.realm:realm-gradle-plugin:5.7.0"
         classpath 'com.google.gms:google-services:4.3.3'
         classpath 'com.google.firebase:perf-plugin:1.3.1'
+        classpath 'io.fabric.tools:gradle:1.31.2'
 
         // TODO BUG, waiting for fix ... :
         // WARNING: API 'variant.getExternalNativeBuildTasks()' is obsolete and has been replaced with 'variant.getExternalNativeBuildProviders()'.
