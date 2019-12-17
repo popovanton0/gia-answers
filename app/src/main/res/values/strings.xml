@@ -97,4 +97,6 @@
     <string name="terms_and_conditions">Terms and conditions</string>
     <string name="terms_and_conditions_url" translatable="false">https://gia-answers.firebaseapp.com/terms-and-conditions.html</string>
     <string name="about_legal">Legal information</string>
+    <string name="drawer_item_dark_theme">Dark theme</string>
+    <string name="drawer_item_light_theme">Light theme</string>
 </resources>

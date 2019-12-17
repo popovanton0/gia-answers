@@ -80,4 +80,6 @@
     <string name="privacy_policy">Политика конфиденциальности</string>
     <string name="terms_and_conditions">Условия использования</string>
     <string name="about_legal">Документы</string>
+    <string name="drawer_item_dark_theme">Тёмная тема</string>
+    <string name="drawer_item_light_theme">Светлая тема</string>
 </resources>

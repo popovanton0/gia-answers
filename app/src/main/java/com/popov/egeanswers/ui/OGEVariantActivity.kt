@@ -80,16 +80,17 @@ class OGEVariantActivity : AppCompatActivity() {
             mPdfView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             group.addView(mPdfView)
 
-            if (isDarkMode) mPdfView.nightMode(true)
+            //mPdfView.nightMode(isDarkMode)
             mPdfView.recycle()
             mPdfView.fromBytes(it)
                     .onLoad { varLoadingProgressBar.visibility = View.GONE }
-                    .onRender { _, _, _ ->
+                    /*.onRender { _, _, _ ->
                         mPdfView.apply { if (width / optimalPageWidth > zoom) fitToWidth() }
                     }
                     .onPageScroll { _, _ ->
                         mPdfView.apply { if (width / optimalPageWidth > zoom) fitToWidth() }
-                    }
+                    }*/
+                    .nightMode(isDarkMode)
                     .load()
         })
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProviders
 import android.content.ComponentName
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
@@ -13,11 +14,14 @@ import android.os.Build
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.*
 import co.zsmb.materialdrawerkt.builders.accountHeader
 import co.zsmb.materialdrawerkt.builders.drawer
 import co.zsmb.materialdrawerkt.draweritems.badgeable.primaryItem
 import co.zsmb.materialdrawerkt.draweritems.badgeable.secondaryItem
 import co.zsmb.materialdrawerkt.draweritems.divider
+import co.zsmb.materialdrawerkt.draweritems.switchable.switchItem
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.materialdrawer.Drawer
 import com.popov.egeanswers.BuildConfig
@@ -25,11 +29,9 @@ import com.popov.egeanswers.R
 import com.popov.egeanswers.larinApi.LarinApi
 import com.popov.egeanswers.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.longToast
-import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.*
 import java.util.*
+import kotlin.error
 
 class MainActivity : AppCompatActivity(), AnkoLogger {
 
@@ -55,6 +57,12 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
                     BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher),
                     Color.parseColor("#388E3C")
             ))
+        }
+
+        val isDarkMode = when (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> true
+            Configuration.UI_MODE_NIGHT_NO -> false
+            else -> kotlin.error("Unreachable")
         }
 
         m.startIntro.observe(this, Observer {
@@ -83,10 +91,14 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             onItemClick { pos ->
                 drawer?.closeDrawer()
                 when (pos) {
-                    6 -> startActivity<SettingsActivity>()
-                    7 -> openYandexDialogsSkill()
-                    8 -> startActivity<AboutActivity>()
-                    9 -> {
+                    6 -> {
+                        if (isDarkMode) setDefaultNightMode(MODE_NIGHT_NO)
+                        else setDefaultNightMode(MODE_NIGHT_YES)
+                    }
+                    7 -> startActivity<SettingsActivity>()
+                    8 -> openYandexDialogsSkill()
+                    9 -> startActivity<AboutActivity>()
+                    10 -> {
                         longToast(defaultSharedPreferences.all.map { "${it.key} : ${it.value}" }.joinToString(separator = "\n"))
                     }
                     else -> {
@@ -117,6 +129,17 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             }
 
             divider {}
+            secondaryItem(R.string.drawer_item_dark_theme) {
+                if (isDarkMode) {
+                    nameRes = R.string.drawer_item_light_theme
+                    icon = R.drawable.ic_sun
+                } else {
+                    nameRes = R.string.drawer_item_dark_theme
+                    icon = R.drawable.ic_moon
+                }
+
+                selectable = false
+            }
             secondaryItem(R.string.title_activity_settings) { icon = R.drawable.ic_settings_grey_600; selectable = false }
             secondaryItem(R.string.drawer_item_alice) { icon = R.drawable.ic_keyboard_voice_grey_600; selectable = false }
             secondaryItem(R.string.drawer_item_about) { icon = R.drawable.ic_info_outline_grey_24dp; selectable = false }
