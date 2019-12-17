@@ -108,7 +108,5 @@ class LarinOGEVariantDao {
         false
     }
 
-    fun close() {
-        realm.close()
-    }
+    fun close() = realm.close()
 }

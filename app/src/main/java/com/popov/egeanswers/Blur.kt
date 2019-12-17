@@ -5,7 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 
 
-object BlurBuilder {
+object Blur {
     private const val BITMAP_SCALE = 0.4f
     private const val BLUR_RADIUS = 3.5f
 

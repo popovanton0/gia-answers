@@ -6,7 +6,7 @@
         android:entryValues="@array/list_user_role_values"
         android:key="user_role"
         android:title="@string/user_params_page_title"
-        android:icon="@drawable/account_question"/>
+        android:icon="@drawable/ic_account_question"/>
 
     <ListPreference
         android:defaultValue="9"

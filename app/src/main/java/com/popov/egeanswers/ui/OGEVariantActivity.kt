@@ -1,9 +1,11 @@
 package com.popov.egeanswers.ui
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.content.res.Configuration
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -23,12 +25,13 @@ import com.github.barteksc.pdfviewer.PDFView
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.AnswersAdapter
 import com.popov.egeanswers.R
+import com.popov.egeanswers.util.nightMode
 import com.popov.egeanswers.viewmodel.OGEVariantViewModel
 import com.popov.egeanswers.viewmodel.VariantViewModelFactory
 import kotlinx.android.synthetic.main.activity_oge_variant.*
+import org.jetbrains.anko.configuration
 import org.jetbrains.anko.share
 import org.jetbrains.anko.toast
-
 
 class OGEVariantActivity : AppCompatActivity() {
 
@@ -44,6 +47,12 @@ class OGEVariantActivity : AppCompatActivity() {
 
         intent.data?.path?.apply {
             varNumber = replaceBeforeLast('/', "").removePrefix("/trvar").removeSuffix("_oge.html").toInt()
+        }
+
+        val isDarkMode = when (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> true
+            Configuration.UI_MODE_NIGHT_NO -> false
+            else -> error("Unreachable")
         }
 
         m = ViewModelProviders
@@ -71,9 +80,16 @@ class OGEVariantActivity : AppCompatActivity() {
             mPdfView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             group.addView(mPdfView)
 
+            if (isDarkMode) mPdfView.nightMode(true)
             mPdfView.recycle()
             mPdfView.fromBytes(it)
                     .onLoad { varLoadingProgressBar.visibility = View.GONE }
+                    .onRender { _, _, _ ->
+                        mPdfView.apply { if (width / optimalPageWidth > zoom) fitToWidth() }
+                    }
+                    .onPageScroll { _, _ ->
+                        mPdfView.apply { if (width / optimalPageWidth > zoom) fitToWidth() }
+                    }
                     .load()
         })
 
@@ -111,16 +127,33 @@ class OGEVariantActivity : AppCompatActivity() {
         }
 
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-        m.answersPanelState.observe(this, Observer {
-            if (it == null) return@Observer
-            bottomSheetBehavior.state = it
+        if (m.answersPanelState.value != null) {
+            bottomSheetBehavior.state = m.answersPanelState.value!!
+            when (m.answersPanelState.value!!) {
+                STATE_COLLAPSED -> answersPanelArrowImageView.rotation = 0f
+                STATE_EXPANDED -> answersPanelArrowImageView.rotation = 180f
+            }
+        }
+
+        bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(p0: View, percent: Float) {
+                answersPanelArrowImageView.rotation = 360 - percent * 180 // degrees
+            }
+
+            @SuppressLint("SwitchIntDef")
+            override fun onStateChanged(p0: View, state: Int) {
+                m.answersPanelState.postValue(state)
+                when (state) {
+                    STATE_COLLAPSED -> answersPanelArrowImageView.rotation = 0f
+                    STATE_EXPANDED -> answersPanelArrowImageView.rotation = 180f
+                }
+            }
         })
 
         answersPanel.setOnClickListener {
-            m.answersPanelState.postValue(
+            bottomSheetBehavior.state =
                     if (m.answersPanelState.value == STATE_COLLAPSED) STATE_EXPANDED
                     else STATE_COLLAPSED
-            )
         }
 
         m.isOffline.observe(this, Observer {
@@ -148,6 +181,13 @@ class OGEVariantActivity : AppCompatActivity() {
 
             menu.findItem(R.id.offline).isEnabled = true
         })
+    }
+
+    override fun onBackPressed() {
+        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+        if (bottomSheetBehavior.state == STATE_EXPANDED)
+            bottomSheetBehavior.state = STATE_COLLAPSED
+        else super.onBackPressed()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

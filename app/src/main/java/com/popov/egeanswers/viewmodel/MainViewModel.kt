@@ -1,9 +1,6 @@
 package com.popov.egeanswers.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
@@ -11,12 +8,15 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.lifecycle.*
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.popov.egeanswers.ActionLiveData
 import com.popov.egeanswers.BuildConfig
-import com.popov.egeanswers.LarinApi
+import com.popov.egeanswers.larinApi.LarinApi
 import com.popov.egeanswers.R
+import com.popov.egeanswers.larinApi.EgeApi
+import com.popov.egeanswers.larinApi.OgeApi
 import com.popov.egeanswers.ui.EGEVariantActivity
 import com.popov.egeanswers.ui.OGEVariantActivity
 import kotlinx.coroutines.CoroutineStart
@@ -35,15 +35,22 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
     val noInternetSnackbar = ActionLiveData<Byte>()
     val betaDialog = ActionLiveData<Byte>()
     val startIntro = ActionLiveData<Byte>()
-    private val api = LarinApi()
+    private val egeApi = EgeApi()
+    private val ogeApi = OgeApi()
     private var sp = app.defaultSharedPreferences
+    private val egeVarsOnlineVM by lazy { EGEVariantsViewModel(false, app) }
+    private val egeVarsOfflineVM by lazy { EGEVariantsViewModel(true, app) }
+    private val ogeVarsOnlineVM by lazy { OGEVariantsViewModel(false, app) }
+    private val ogeVarsOfflineVM by lazy { OGEVariantsViewModel(true, app) }
 
+    fun getEGEViewModel(isOfflineOnly: Boolean) = if (isOfflineOnly) egeVarsOfflineVM else egeVarsOnlineVM
+    fun getOGEViewModel(isOfflineOnly: Boolean) = if (isOfflineOnly) ogeVarsOfflineVM else ogeVarsOnlineVM
 
     init {
         sp.edit().remove("isFirstStart").apply()
         if (!sp.contains("is_first_start")) startIntro.sendAction(0)
         setFragment(1)
-        GlobalScope.launch(Dispatchers.Main, CoroutineStart.DEFAULT) {
+        viewModelScope.launch(Dispatchers.Main) {
             try {
                 setupShortcuts()
             } catch (e: Exception) {
@@ -144,12 +151,12 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
 
             val varNumberEGE: Int = try {
                 yearOfVar = currentYear + 1
-                val latestVarNumber = api.EGE().getLatestVarNumber(currentYear + 1)
+                val latestVarNumber = egeApi.getLatestVarNumber(currentYear + 1)
                 if (latestVarNumber == 0) throw Exception()
                 latestVarNumber
             } catch (e: Exception) {
                 yearOfVar = currentYear
-                api.EGE().getLatestVarNumber(currentYear)
+                egeApi.getLatestVarNumber(currentYear)
             }
 
             if (varNumberEGE == 0) return
@@ -167,12 +174,12 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
 
             val varNumberOGE: Int = try {
                 yearOfVar = currentYear + 1
-                val latestVarNumber = api.OGE().getLatestVarNumber(currentYear + 1)
+                val latestVarNumber = ogeApi.getLatestVarNumber(currentYear + 1)
                 if (latestVarNumber == 0) throw Exception()
                 latestVarNumber
             } catch (e: Exception) {
                 yearOfVar = currentYear
-                api.OGE().getLatestVarNumber(currentYear)
+                ogeApi.getLatestVarNumber(currentYear)
             }
 
             if (varNumberOGE == 0) return

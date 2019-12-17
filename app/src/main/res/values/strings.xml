@@ -96,4 +96,5 @@
     <string name="privacy_policy_url" translatable="false">https://gia-answers.firebaseapp.com/privacy-policy.html</string>
     <string name="terms_and_conditions">Terms and conditions</string>
     <string name="terms_and_conditions_url" translatable="false">https://gia-answers.firebaseapp.com/terms-and-conditions.html</string>
+    <string name="about_legal">Legal information</string>
 </resources>

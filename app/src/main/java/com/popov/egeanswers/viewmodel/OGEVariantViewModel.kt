@@ -1,17 +1,16 @@
 package com.popov.egeanswers.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import android.os.Bundle
+import androidx.lifecycle.*
+import androidx.lifecycle.Observer
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.ActionLiveData
-import com.popov.egeanswers.LarinApi
+import com.popov.egeanswers.larinApi.LarinApi
 import com.popov.egeanswers.R
 import com.popov.egeanswers.dao.LarinOGEVariantDao
+import com.popov.egeanswers.larinApi.OgeApi
 import com.popov.egeanswers.model.LarinOGEVariant
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -22,8 +21,9 @@ import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class OGEVariantViewModel(private val app: Application,
-                          private val varNumber: Int
+class OGEVariantViewModel(
+        private val app: Application,
+        private val varNumber: Int
 ) : AndroidViewModel(app) {
     val share = ActionLiveData<String>()
     val stopLoadingAnimation = ActionLiveData<Byte>()
@@ -36,7 +36,7 @@ class OGEVariantViewModel(private val app: Application,
     private val answers = MutableLiveData<List<String>>()
 
     private val dao = LarinOGEVariantDao()
-    private val api = LarinApi().OGE()
+    private val api = OgeApi()
 
     private var variant: LarinOGEVariant? = null
 
@@ -47,7 +47,7 @@ class OGEVariantViewModel(private val app: Application,
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     init {
-        GlobalScope.launch(Dispatchers.Main, CoroutineStart.DEFAULT) {
+        viewModelScope.launch {
             answersPanelState.postValue(BottomSheetBehavior.STATE_COLLAPSED)
 
             firebaseAnalytics = FirebaseAnalytics.getInstance(app)
@@ -67,7 +67,7 @@ class OGEVariantViewModel(private val app: Application,
             if (variant == null) {
                 // pdf
                 try {
-                    pdfBytes.postValue(api.getPdf(varNumber))
+                    pdfBytes.postValue(api.getPdf(varNumber, 0))
                 } catch (e: Exception) {
                     app.toast(R.string.pdf_loading_error)
                     stopLoadingAnimation.sendAction(0)

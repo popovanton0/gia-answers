@@ -1,17 +1,18 @@
 package com.popov.egeanswers.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import android.os.Bundle
+import android.util.Log
+import androidx.lifecycle.*
+import androidx.lifecycle.Observer
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.ActionLiveData
-import com.popov.egeanswers.LarinApi
+import com.popov.egeanswers.larinApi.LarinApi
 import com.popov.egeanswers.R
 import com.popov.egeanswers.dao.LarinEGEVariantDao
+import com.popov.egeanswers.larinApi.EgeApi
+import com.popov.egeanswers.larinApi.LarinApi.Companion.baseUrl
 import com.popov.egeanswers.model.LarinEGEVariant
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +40,7 @@ class EGEVariantViewModel(private val app: Application,
     private val part2AnswersBytes = MutableLiveData<ByteArray>()
 
     private val dao = LarinEGEVariantDao()
-    private val api = LarinApi().EGE()
+    private val api = EgeApi()
 
     private var variant: LarinEGEVariant? = null
 
@@ -51,7 +52,7 @@ class EGEVariantViewModel(private val app: Application,
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     init {
-        GlobalScope.launch(Dispatchers.Main, CoroutineStart.DEFAULT) {
+        viewModelScope.launch(Dispatchers.Main) {
             answersPanelState.postValue(BottomSheetBehavior.STATE_COLLAPSED)
 
             firebaseAnalytics = FirebaseAnalytics.getInstance(app)
@@ -89,6 +90,7 @@ class EGEVariantViewModel(private val app: Application,
                     part2AnswersBytes.postValue(api.getPart2Answers(varNumber, varYear))
                 } catch (e: Exception) {
                     app.toast(R.string.part2Answers_downloading_error)
+                    Log.e("EGEVariantViewModel", app.getString(R.string.part2Answers_downloading_error), e)
                 }
             } else {
                 pdfBytes.postValue(variant!!.pdf.copyOf())
@@ -99,7 +101,8 @@ class EGEVariantViewModel(private val app: Application,
                     val part2Answers = api.getPart2Answers(varNumber, varYear)
                     dao.setPart2Answers(varNumber, part2Answers)
                     part2AnswersBytes.postValue(part2Answers)
-                } catch (ignored: Exception) {
+                } catch (e: Exception) {
+                    Log.e("EGEVariantViewModel", app.getString(R.string.part2Answers_downloading_error), e)
                 }
             }
         }
@@ -109,10 +112,13 @@ class EGEVariantViewModel(private val app: Application,
         if (part1Answers.value == null || part1Answers.value!!.isEmpty()) {
             return
         }
+        val part2Url = if (varNumber >= 285) "$baseUrl/ege/$varYear/trvar${varNumber}_0.png"
+        else "$baseUrl/ege/$varYear/trvar$varNumber.png"
+
         var shareBody = "${app.getString(R.string.larin)} ${app.getString(R.string.variant_ege)} $varNumber\n"
-        shareBody += "http://alexlarin.net/ege/$varYear/trvar$varNumber.html\n"
-        for (i in 0 until part1Answers.value!!.size) shareBody += "${i + 1}. ${part1Answers.value!![i]}\n"
-        shareBody += "${app.getString(R.string.part2_share)} http://alexlarin.net/ege/$varYear/trvar$varNumber.png"
+        shareBody += "$baseUrl/ege/$varYear/trvar$varNumber.html\n"
+        for (i in part1Answers.value!!.indices) shareBody += "${i + 1}. ${part1Answers.value!![i]}\n"
+        shareBody += "${app.getString(R.string.part2_share)} $part2Url"
         share.sendAction(shareBody)
 
         val bundle = Bundle()
@@ -122,7 +128,7 @@ class EGEVariantViewModel(private val app: Application,
     }
 
     fun offlineButton() {
-        GlobalScope.launch(Dispatchers.Main, CoroutineStart.DEFAULT) {
+        viewModelScope.launch(Dispatchers.Main) {
             if (variant == null) {
                 try {
                     if (pdfBytes.value == null || part2AnswersBytes.value == null || part1Answers.value!!.isEmpty()) {

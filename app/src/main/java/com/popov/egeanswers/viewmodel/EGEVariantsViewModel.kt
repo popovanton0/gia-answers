@@ -2,15 +2,15 @@ package com.popov.egeanswers.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import android.os.Bundle
 import androidx.annotation.MainThread
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.popov.egeanswers.ActionLiveData
-import com.popov.egeanswers.LarinApi
+import com.popov.egeanswers.larinApi.LarinApi
 import com.popov.egeanswers.R
 import com.popov.egeanswers.dao.LarinEGEVariantDao
+import com.popov.egeanswers.larinApi.EgeApi
 import com.popov.egeanswers.model.LarinEGEVariant
 import com.popov.egeanswers.model.VariantType
 import com.popov.egeanswers.model.VariantUI
@@ -20,23 +20,15 @@ import java.util.*
 
 class EGEVariantsViewModel(private val isOfflineOnly: Boolean, private val app: Application) : VariantsViewModel(isOfflineOnly, app) {
 
-    private val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-    private val variants = MutableLiveData<List<VariantUI>>()
-    override val varsLoadingErrorSnackbar = ActionLiveData<String>()
-    private var varsLoadingJob: Job? = null
-    private var varsSearchingJob: Job? = null
-
     private val dao = LarinEGEVariantDao()
-    private val api = LarinApi().EGE()
-
-    private lateinit var firebaseAnalytics: FirebaseAnalytics
+    override val api = EgeApi()
 
     private val offlineVars = dao.getAllLiveData()
 
     private val offlineVarsOnlineObserver = Observer<List<LarinEGEVariant>> { dbVars ->
         if (dbVars == null) return@Observer
-        variants.postValue(
-                variants.value!!.map { uiVar ->
+        _variants.postValue(
+                _variants.value!!.map { uiVar ->
                     val isOffline = dbVars.firstOrNull { uiVar.number == it.number } != null
                     uiVar.copy(isOffline = isOffline)
                 }
@@ -45,7 +37,7 @@ class EGEVariantsViewModel(private val isOfflineOnly: Boolean, private val app: 
 
     private val offlineVarsOfflineObserver = Observer<List<LarinEGEVariant>> { dbVars ->
         if (dbVars == null) return@Observer
-        variants.postValue(dbVars
+        _variants.postValue(dbVars
                 .asSequence()
                 .sortedByDescending { it.number }
                 .map { larinEGEVariant ->
@@ -60,15 +52,14 @@ class EGEVariantsViewModel(private val isOfflineOnly: Boolean, private val app: 
     }
 
     init {
-        firebaseAnalytics = FirebaseAnalytics.getInstance(app)
-        varsLoadingJob = GlobalScope.async(Dispatchers.Main, CoroutineStart.DEFAULT) {
+        varsLoadingJob = viewModelScope.launch(Dispatchers.Main) {
             try {
-                // "currentYear + 1" because of september - december posts of (year + 1) variants
-                loadEGEVariants(currentYear + 1, LarinApi.EGE_START_YEAR)
+                // 'currentYear + 1' because of september - december posts of (year + 1) variants
+                loadVariants(currentYear + 1, LarinApi.EGE_START_YEAR)
             } catch (ignored: Exception) {
-                variants.value = emptyList()
+                _variants.value = emptyList()
                 try {
-                    loadEGEVariants(currentYear, LarinApi.EGE_START_YEAR)
+                    loadVariants(currentYear, LarinApi.EGE_START_YEAR)
                 } catch (e: Exception) {
                     varsLoadingErrorSnackbar.sendAction(
                             if (!e.message.isNullOrBlank()) app.getString(R.string.variants_loading_error) + ": " + e.message
@@ -79,14 +70,14 @@ class EGEVariantsViewModel(private val isOfflineOnly: Boolean, private val app: 
         }
     }
 
-    private suspend fun loadEGEVariants(nowYear: Int, startYear: Int) {
+    override suspend fun loadVariants(nowYear: Int, startYear: Int) {
         offlineVars.removeObserver(offlineVarsOnlineObserver)
         offlineVars.removeObserver(offlineVarsOfflineObserver)
         if (!isOfflineOnly) {
             val offline = dao.getAll().map { it.number }
 
             val vars = mutableListOf<VariantUI>()
-            // why it is here?  if (variants.value != null) vars.addAll(variants.value!!)
+            // why it is here?  if (_variants.value != null) vars.addAll(_variants.value!!)
 
             for (year in nowYear downTo startYear) {
                 val varNumbers = api.getVarNumbers(year)
@@ -99,7 +90,7 @@ class EGEVariantsViewModel(private val isOfflineOnly: Boolean, private val app: 
                             type = VariantType.EGE
                     ))
                 }
-                variants.postValue(vars)
+                _variants.postValue(vars)
             }
 
             if (vars.isEmpty()) throw Exception()
@@ -107,7 +98,7 @@ class EGEVariantsViewModel(private val isOfflineOnly: Boolean, private val app: 
         } else offlineVars.observeForever(offlineVarsOfflineObserver)
     }
     override fun search(varNumber: Int, @MainThread done: (isSuccess: Boolean, isNotFound: Boolean, varYear: Int) -> Unit) {
-        varsSearchingJob = GlobalScope.async(Dispatchers.Main, CoroutineStart.DEFAULT) {
+        varsSearchingJob = viewModelScope.launch(Dispatchers.Main) {
             try {
                 val bundle = Bundle()
                 bundle.putInt(FirebaseAnalytics.Param.ITEM_ID, varNumber)
@@ -117,12 +108,12 @@ class EGEVariantsViewModel(private val isOfflineOnly: Boolean, private val app: 
                 val isActive = varsLoadingJob?.isActive
                 if (isActive != null && isActive) {
                     done(false, false, -1)
-                    return@async
+                    return@launch
                 }
-                val foundVar = variants.value?.find { it.number == varNumber }
+                val foundVar = _variants.value?.find { it.number == varNumber }
                 if (foundVar == null) {
                     done(false, true, -1)
-                    return@async
+                    return@launch
                 }
                 done(true, false, foundVar.year)
             } catch (e: Exception) {
@@ -131,12 +122,8 @@ class EGEVariantsViewModel(private val isOfflineOnly: Boolean, private val app: 
         }
     }
 
-    override fun getVariantsLiveData(): LiveData<List<VariantUI>> = variants
-
     override fun onCleared() {
         super.onCleared()
-        varsLoadingJob?.cancel()
-        varsSearchingJob?.cancel()
         dao.close()
     }
 }

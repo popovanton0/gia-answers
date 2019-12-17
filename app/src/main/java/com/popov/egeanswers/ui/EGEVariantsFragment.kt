@@ -23,6 +23,7 @@ import com.popov.egeanswers.EGEVariantsAdapter
 import com.popov.egeanswers.R
 import com.popov.egeanswers.model.VariantUI
 import com.popov.egeanswers.viewmodel.EGEVariantsViewModel
+import com.popov.egeanswers.viewmodel.MainViewModel
 import com.popov.egeanswers.viewmodel.VariantsViewModelFactory
 import kotlinx.android.synthetic.main.fragment_variants.*
 import org.jetbrains.anko.support.v4.alert
@@ -36,22 +37,27 @@ open class EGEVariantsFragment : Fragment() {
 
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_variants, container, false)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
         firebaseAnalytics.setCurrentScreen(this.activity!!, "ege-fragment", null)
 
-        m = ViewModelProviders
-                .of(this, VariantsViewModelFactory(isOfflineOnly, this.activity!!.application))
-                .get(EGEVariantsViewModel::class.java)
+        m = ViewModelProviders.of(this.activity!!)
+                .get(MainViewModel::class.java)
+                .getEGEViewModel(isOfflineOnly)
 
         val variants = mutableListOf<VariantUI>()
 
         variantsView.layoutManager = LinearLayoutManager(this.context)
         variantsView.adapter = EGEVariantsAdapter(this, variants)
 
-        m.getVariantsLiveData().observe(this, Observer {
+        m.variants.observe(this, Observer {
             if (it == null) return@Observer
             variants.clear()
             variants.addAll(it)
@@ -77,7 +83,7 @@ open class EGEVariantsFragment : Fragment() {
 
         searchFAB.setOnClickListener {
             val searchEditText = EditText(context)
-            searchEditText.setPadding(dip(10), dip(10), dip(10), dip(10))
+            searchEditText.setPadding(10, 10, 10, 10)
             searchEditText.inputType = InputType.TYPE_CLASS_NUMBER
             searchEditText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -98,59 +104,55 @@ open class EGEVariantsFragment : Fragment() {
 
             })
             val inputMethodManager = this.activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            alert(R.string.variant_search, android.R.string.search_go) {
-                customView = searchEditText
-                negativeButton(android.R.string.cancel) {}
-                positiveButton(android.R.string.search_go) {
-                    inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
-                    val loadingAlert = AlertDialog.Builder(context!!)
-                            .setTitle(R.string.loading_title)
-                            .setMessage(R.string.searching_message)
-                            .setCancelable(false)
-                            .create()
-                    loadingAlert.setCanceledOnTouchOutside(false)
-                    loadingAlert.show()
+            AlertDialog.Builder(this.context!!)
+                    .setTitle(android.R.string.search_go)
+                    .setMessage(R.string.variant_search)
+                    .setView(searchEditText)
+                    .setNegativeButton(android.R.string.cancel) { dialog, which -> }
+                    .setPositiveButton(android.R.string.search_go) { dialog, which ->
+                        inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+                        val loadingAlert = AlertDialog.Builder(context!!)
+                                .setTitle(R.string.loading_title)
+                                .setMessage(R.string.searching_message)
+                                .setCancelable(false)
+                                .create()
+                        loadingAlert.setCanceledOnTouchOutside(false)
+                        loadingAlert.show()
 
-                    if (searchEditText.text.toString().isEmpty()) {
-                        loadingAlert.setCancelable(true)
-                        loadingAlert.cancel()
-                        return@positiveButton
+                        if (searchEditText.text.toString().isEmpty()) {
+                            loadingAlert.setCancelable(true)
+                            loadingAlert.cancel()
+                            return@setPositiveButton
+                        }
+
+                        val varNumber = searchEditText.text.toString().toInt()
+                        m.search(varNumber) { isSuccess, isNotFound, varYear ->
+                            loadingAlert.setCancelable(true)
+                            loadingAlert.cancel()
+
+                            if (isSuccess && !isNotFound) {
+                                val intent = Intent(this.context!!, EGEVariantActivity::class.java).apply {
+                                    putExtra("varNumber", varNumber)
+                                    putExtra("varYear", varYear)
+                                }
+                                startActivityForResult(intent, 0)
+                            } else if (isNotFound)
+                                Snackbar.make(variantsRootLayout, R.string.varinat_not_found, Snackbar.LENGTH_LONG).show()
+                            else Snackbar.make(variantsRootLayout, R.string.variants_search_error, Snackbar.LENGTH_LONG).show()
+                        }
                     }
-
-                    val varNumber = searchEditText.text.toString().toInt()
-                    m.search(varNumber) { isSuccess, isNotFound, varYear ->
-                        loadingAlert.setCancelable(true)
-                        loadingAlert.cancel()
-
-                        if (isSuccess && !isNotFound)
-                            startActivityForResult<EGEVariantActivity>(0, "varNumber" to varNumber, "varYear" to varYear)
-                        else if (isNotFound)
-                            Snackbar.make(variantsRootLayout, R.string.varinat_not_found, Snackbar.LENGTH_LONG).show()
-                        else Snackbar.make(variantsRootLayout, R.string.variants_search_error, Snackbar.LENGTH_LONG).show()
-                    }
-                }
-            }.show()
+                    .show()
         }
     }
 
     private fun variantsLoadingError(errorMessage: String) {
         Snackbar.make(variantsView, R.string.variants_loading_error, Snackbar.LENGTH_LONG)
                 .setAction(R.string.error_details) {
-                    alert(errorMessage, getString(R.string.error_details)).show()
-                }.show()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != Activity.RESULT_OK) return
-        val varNumber = data?.getIntExtra("varNumber", 0) ?: 0
-        val isOffline = data?.getBooleanExtra("isOffline", false) ?: false
-        //m.changeIsOfflineForVariant()
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_variants, container, false)
+                    AlertDialog.Builder(this.context!!)
+                            .setTitle(getString(R.string.error_details))
+                            .setMessage(errorMessage)
+                            .show()
+                }
+                .show()
     }
 }

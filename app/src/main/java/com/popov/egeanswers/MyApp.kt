@@ -1,8 +1,12 @@
 package com.popov.egeanswers
 
 import android.content.Context
-import androidx.multidex.MultiDexApplication
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
+import android.graphics.Paint
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.multidex.MultiDexApplication
+import com.github.barteksc.pdfviewer.PDFView
 import com.popov.egeanswers.dbMigrations.Migration11
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher

@@ -10,8 +10,6 @@ import kotlinx.android.synthetic.main.activity_settings.*
 import org.jetbrains.anko.defaultSharedPreferences
 import java.util.*
 
-
-
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var sp: SharedPreferences

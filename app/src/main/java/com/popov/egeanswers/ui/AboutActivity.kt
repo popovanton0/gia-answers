@@ -62,7 +62,7 @@ class AboutActivity : MaterialAboutActivity() {
                                 .build())
                         .build())
                 .addCard(MaterialAboutCard.Builder()
-                        //.title("")
+                        .title(R.string.about_legal)
                         .addItem(MaterialAboutActionItem.Builder()
                                 .text(R.string.privacy_policy)
                                 .icon(R.drawable.ic_shield_lock_grey_600)

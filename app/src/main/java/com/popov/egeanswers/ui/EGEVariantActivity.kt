@@ -1,12 +1,13 @@
 package com.popov.egeanswers.ui
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.content.res.Configuration
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.*
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -25,14 +26,18 @@ import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationUtils
 import android.webkit.JavascriptInterface
 import android.widget.ImageView
+import android.widget.Toast
 import com.github.barteksc.pdfviewer.PDFView
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.AnswersAdapter
-import com.popov.egeanswers.BlurBuilder
+import com.popov.egeanswers.Blur
 import com.popov.egeanswers.R
+import com.popov.egeanswers.util.nightMode
 import com.popov.egeanswers.viewmodel.EGEVariantViewModel
 import com.popov.egeanswers.viewmodel.VariantViewModelFactory
 import kotlinx.android.synthetic.main.activity_ege_variant.*
+import kotlinx.coroutines.*
+import org.jetbrains.anko.configuration
 import org.jetbrains.anko.share
 import org.jetbrains.anko.toast
 
@@ -52,6 +57,12 @@ class EGEVariantActivity : AppCompatActivity() {
         intent.data?.path?.apply {
             varNumber = replaceBeforeLast('/', "").removePrefix("/trvar").removeSuffix(".html").toInt()
             varYear = replaceAfterLast('/', "").removeSuffix("/").replaceBeforeLast('/', "").removePrefix("/").toInt()
+        }
+
+        val isDarkMode = when (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> true
+            Configuration.UI_MODE_NIGHT_NO -> false
+            else -> error("Unreachable")
         }
 
         m = ViewModelProviders
@@ -79,9 +90,16 @@ class EGEVariantActivity : AppCompatActivity() {
             mPdfView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             group.addView(mPdfView)
 
+            if (isDarkMode) mPdfView.nightMode(true)
             mPdfView.recycle()
             mPdfView.fromBytes(it)
                     .onLoad { varLoadingProgressBar.visibility = View.GONE }
+                    .onRender { _, _, _ ->
+                        mPdfView.apply { if (width / optimalPageWidth > zoom) fitToWidth() }
+                    }
+                    .onPageScroll { _, _ ->
+                        mPdfView.apply { if (width / optimalPageWidth > zoom) fitToWidth() }
+                    }
                     .load()
         })
 
@@ -116,13 +134,11 @@ class EGEVariantActivity : AppCompatActivity() {
                 part2answersImageView.setOnClickListener { }
 
                 val isBlurring = showPart2answersTextView.visibility != View.VISIBLE
-                val unBlurredImage = m.getPart2AnswersBytesLiveData().value
-                        ?: return@OnClickListener // is not possible
-                val unBlurredImageBitmap = BitmapFactory.decodeByteArray(unBlurredImage, 0, unBlurredImage.size)
+                val unBlurredImageBitmap = getAnswersBitmap(m.getPart2AnswersBytesLiveData().value, isDarkMode)
                         ?: return@OnClickListener
 
                 if (isBlurring) {
-                    val blurredImageBitmap = BlurBuilder.blur(this, unBlurredImageBitmap)
+                    val blurredImageBitmap = Blur.blur(this, unBlurredImageBitmap)
                     part2answersImageView.setOnClickListener { }
                     setImageWithAnimation(part2answersImageView, blurredImageBitmap) {
                         showPart2answersTextView.visibility = View.VISIBLE
@@ -140,20 +156,15 @@ class EGEVariantActivity : AppCompatActivity() {
 
             part2answersImageView.setOnClickListener { }
 
-            val unBlurredImageBitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+            val unBlurredImageBitmap = getAnswersBitmap(m.getPart2AnswersBytesLiveData().value, isDarkMode)
                     ?: return@Observer
-            val blurredImageBitmap = BlurBuilder.blur(this, unBlurredImageBitmap)
+            val blurredImageBitmap = Blur.blur(this, unBlurredImageBitmap)
             setImageWithAnimation(part2answersImageView, blurredImageBitmap) {
                 part2answersImageView.setOnClickListener(onClick)
             }
 
             showPart2answersTextView.visibility = View.VISIBLE
         })
-
-        /*m.setActivityResult.observe(this, Observer {
-            if (it == null) return@Observer
-            setResult(it.first, it.second)
-        })*/
 
         m.share.observe(this, Observer {
             if (it == null) return@Observer
@@ -176,16 +187,33 @@ class EGEVariantActivity : AppCompatActivity() {
         }
 
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-        m.answersPanelState.observe(this, Observer {
-            if (it == null) return@Observer
-            bottomSheetBehavior.state = it
+        if (m.answersPanelState.value != null) {
+            bottomSheetBehavior.state = m.answersPanelState.value!!
+            when (m.answersPanelState.value!!) {
+                STATE_COLLAPSED -> answersPanelArrowImageView.rotation = 0f
+                STATE_EXPANDED -> answersPanelArrowImageView.rotation = 180f
+            }
+        }
+
+        bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(p0: View, percent: Float) {
+                answersPanelArrowImageView.rotation = 360 - percent * 180 // degrees
+            }
+
+            @SuppressLint("SwitchIntDef")
+            override fun onStateChanged(p0: View, state: Int) {
+                m.answersPanelState.postValue(state)
+                when (state) {
+                    STATE_COLLAPSED -> answersPanelArrowImageView.rotation = 0f
+                    STATE_EXPANDED -> answersPanelArrowImageView.rotation = 180f
+                }
+            }
         })
 
         answersPanel.setOnClickListener {
-            m.answersPanelState.postValue(
+            bottomSheetBehavior.state =
                     if (m.answersPanelState.value == STATE_COLLAPSED) STATE_EXPANDED
                     else STATE_COLLAPSED
-            )
         }
 
         m.isOffline.observe(this, Observer {
@@ -215,6 +243,13 @@ class EGEVariantActivity : AppCompatActivity() {
         })
     }
 
+    override fun onBackPressed() {
+        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+        if (bottomSheetBehavior.state == STATE_EXPANDED)
+            bottomSheetBehavior.state = STATE_COLLAPSED
+        else super.onBackPressed()
+    }
+
     internal inner class MyJavaScriptInterface {
         @JavascriptInterface
         fun sendAnswers(answers: String) = m.setPart1Answers(answers.split(';'))
@@ -223,7 +258,8 @@ class EGEVariantActivity : AppCompatActivity() {
     private fun setImageWithAnimation(imageView: ImageView, bitmap: Bitmap, onSet: () -> Unit) {
         val animOut = AnimationUtils.loadAnimation(this, android.R.anim.fade_out)
         val animIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in)
-        //animIn.duration = 0
+        animIn.duration = 200
+        animOut.duration = 200
         animOut.setAnimationListener(object : AnimationListener {
             override fun onAnimationStart(animation: Animation) {}
             override fun onAnimationRepeat(animation: Animation) {}
@@ -285,5 +321,33 @@ class EGEVariantActivity : AppCompatActivity() {
         val state = BottomSheetBehavior.from(bottomSheet).state
         if (state == STATE_COLLAPSED || state == STATE_EXPANDED)
             m.answersPanelState.postValue(state)
+    }
+
+    private fun Bitmap.invert(): Bitmap {
+        val bitmap: Bitmap = Bitmap.createBitmap(this.width, this.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val paint = Paint()
+        val matrixGrayscale = ColorMatrix()
+        matrixGrayscale.setSaturation(0f)
+        val matrixInvert = ColorMatrix()
+        matrixInvert.set(
+                floatArrayOf(
+                        -0.82f, 0.0f, 0.0f, 0.0f, 255.0f,
+                        0.0f, -0.82f, 0.0f, 0.0f, 255.0f,
+                        0.0f, 0.0f, -0.82f, 0.0f, 255.0f,
+                        0.0f, 0.0f, 0.0f, 1.0f, 0.0f
+                )
+        )
+        matrixInvert.preConcat(matrixGrayscale)
+        val filter = ColorMatrixColorFilter(matrixInvert)
+        paint.colorFilter = filter
+        canvas.drawBitmap(this, 0f, 0f, paint)
+        return bitmap
+    }
+
+    private fun getAnswersBitmap(byteArray: ByteArray?, isDarkMode: Boolean): Bitmap? {
+        byteArray ?: return null
+        val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size) ?: return null
+        return if (isDarkMode) bitmap.invert() else bitmap
     }
 }

@@ -57,12 +57,11 @@ class OGEVariantsAdapter(private val fragment: Fragment, private var items: Muta
             bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "oge")
             firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
 
-            val intent = Intent(fragment.context, OGEVariantActivity::class.java)
-            val options = Bundle().apply {
-                putInt("varNumber", variant.number)
-                putInt("varYear", variant.year)
+            val intent = Intent(fragment.context, OGEVariantActivity::class.java).apply {
+                putExtra("varNumber", variant.number)
+                putExtra("varYear", variant.year)
             }
-            fragment.startActivityForResult(intent, 0, options)
+            fragment.startActivityForResult(intent, 0)
         }
     }
 

@@ -37,6 +37,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginBottom="60dp"
+            android:background="?android:attr/colorBackground"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -74,9 +75,9 @@
         android:id="@+id/bottomSheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        app:behavior_peekHeight="60dp"
+        android:background="?android:attr/colorBackground"
         android:orientation="vertical"
+        app:behavior_peekHeight="60dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <LinearLayout
@@ -90,10 +91,10 @@
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
-                android:background="@android:color/white"
+                android:background="?android:attr/colorBackground"
                 android:gravity="center"
                 android:text="@string/answers"
-                android:textColor="@android:color/black"
+                android:textColor="@color/answers_text"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -101,7 +102,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/answersPanelArrowImageView"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginTop="16dp"

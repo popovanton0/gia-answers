@@ -22,6 +22,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.materialdrawer.Drawer
 import com.popov.egeanswers.BuildConfig
 import com.popov.egeanswers.R
+import com.popov.egeanswers.larinApi.LarinApi
 import com.popov.egeanswers.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
@@ -95,10 +96,10 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
                 }
                 false
             }
-            fun ege() = primaryItem(R.string.drawer_item_ege_variants) { icon = R.drawable.ic_book_open_grey_600; iconTintingEnabled = true }
-            fun oge() = primaryItem(R.string.drawer_item_oge_variants) { icon = R.drawable.ic_book_open_outline_grey_600; iconTintingEnabled = true }
-            fun offlineEge() = primaryItem(R.string.drawer_item_downloaded_ege_variants) { icon = R.drawable.ic_offline_pin_grey_600; iconTintingEnabled = true }
-            fun offlineOge() = primaryItem(R.string.drawer_item_downloaded_oge_variants) { icon = R.drawable.ic_offline_pin_grey_600; iconTintingEnabled = true }
+            fun ege() = primaryItem(R.string.drawer_item_ege_variants) { icon = R.drawable.ic_book_open_grey_600; iconTintingEnabled = false }
+            fun oge() = primaryItem(R.string.drawer_item_oge_variants) { icon = R.drawable.ic_book_open_outline_grey_600; iconTintingEnabled = false }
+            fun offlineEge() = primaryItem(R.string.drawer_item_downloaded_ege_variants) { icon = R.drawable.ic_offline_pin_grey_600; iconTintingEnabled = false }
+            fun offlineOge() = primaryItem(R.string.drawer_item_downloaded_oge_variants) { icon = R.drawable.ic_offline_pin_grey_600; iconTintingEnabled = false }
 
             when (userClass) {
                 8, 9 -> {
@@ -152,7 +153,9 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
                 }
             }
             drawer.setSelectionAtPosition(it)
-            supportFragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit()
+            supportFragmentManager.beginTransaction()
+                    .replace(R.id.flContent, fragment)
+                    .commit()
         })
 
         m.noInternetSnackbar.observe(this, Observer {
