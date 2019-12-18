@@ -31,6 +31,7 @@ class EGEVariantViewModel(private val app: Application,
     val deletionDone = ActionLiveData<Boolean>()
     val isOffline = MutableLiveData<Boolean>()
     val answersPanelState = MutableLiveData<Int>()
+    val isPart2AnswersBlurred = MutableLiveData<Boolean>()
 
     private val pdfBytes = MutableLiveData<ByteArray>()
     private val part1Answers = MutableLiveData<List<String>>()
@@ -51,6 +52,7 @@ class EGEVariantViewModel(private val app: Application,
     init {
         viewModelScope.launch(Dispatchers.Main) {
             answersPanelState.postValue(BottomSheetBehavior.STATE_COLLAPSED)
+            isPart2AnswersBlurred.postValue(true)
 
             firebaseAnalytics = FirebaseAnalytics.getInstance(app)
 

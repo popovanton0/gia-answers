@@ -126,41 +126,44 @@ class EGEVariantActivity : AppCompatActivity() {
             webView.loadData(getHTML(it.first, it.second), "text/html", "UTF-8")
         })
 
-        m.getPart2AnswersBytesLiveData().observe(this, Observer {
-            if (it == null) return@Observer
-            part2answersImageView.setOnClickListener(null)
+        m.getPart2AnswersBytesLiveData().observeNotNull(this, Observer {
+            val unBlurredImageBitmap = getAnswersBitmap(m.getPart2AnswersBytesLiveData().value, isDarkMode)
+                    ?: return@Observer
+            val blurredImageBitmap = Blur.blur(this, unBlurredImageBitmap)
 
             var onClick: View.OnClickListener? = null
             onClick = View.OnClickListener {
                 part2answersImageView.setOnClickListener(null)
 
-                val isBlurred = showPart2answersTextView.visibility == View.VISIBLE
-                val unBlurredImageBitmap = getAnswersBitmap(m.getPart2AnswersBytesLiveData().value, isDarkMode)
-                        ?: return@OnClickListener
+                val isBlurred = m.isPart2AnswersBlurred.value!!
 
                 if (isBlurred) {
                     showPart2answersTextView.visibility = View.GONE
 
                     setImageWithAnimation(part2answersImageView, unBlurredImageBitmap) {
                         part2answersImageView.setOnClickListener(onClick)
+                        m.isPart2AnswersBlurred.value = false
                     }
                 } else {
-                    val blurredImageBitmap = Blur.blur(this, unBlurredImageBitmap)
                     setImageWithAnimation(part2answersImageView, blurredImageBitmap) {
                         showPart2answersTextView.visibility = View.VISIBLE
                         part2answersImageView.setOnClickListener(onClick)
+                        m.isPart2AnswersBlurred.value = true
                     }
                 }
             }
 
-            val unBlurredImageBitmap = getAnswersBitmap(m.getPart2AnswersBytesLiveData().value, isDarkMode)
-                    ?: return@Observer
-            val blurredImageBitmap = Blur.blur(this, unBlurredImageBitmap)
-            setImageWithAnimation(part2answersImageView, blurredImageBitmap) {
-                part2answersImageView.setOnClickListener(onClick)
+            if (m.isPart2AnswersBlurred.value!!) {
+                setImageWithAnimation(part2answersImageView, blurredImageBitmap) {
+                    part2answersImageView.setOnClickListener(onClick)
+                }
+                showPart2answersTextView.visibility = View.VISIBLE
+            } else {
+                setImageWithAnimation(part2answersImageView, unBlurredImageBitmap) {
+                    part2answersImageView.setOnClickListener(onClick)
+                }
+                showPart2answersTextView.visibility = View.GONE
             }
-
-            showPart2answersTextView.visibility = View.VISIBLE
         })
 
         m.share.observe(this, Observer {
