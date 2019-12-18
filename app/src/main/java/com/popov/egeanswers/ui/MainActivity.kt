@@ -91,8 +91,8 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
                         if (isDarkMode) setDefaultNightMode(MODE_NIGHT_NO)
                         else setDefaultNightMode(MODE_NIGHT_YES)
                     }
-                    7 -> startActivity<SettingsActivity>()
-                    8 -> openYandexDialogsSkill()
+                    7 -> openYandexDialogsSkill()
+                    8 -> startActivity<SettingsActivity>()
                     9 -> startActivity<AboutActivity>()
                     10 -> {
                         longToast(defaultSharedPreferences.all.map { "${it.key} : ${it.value}" }.joinToString(separator = "\n"))
@@ -136,9 +136,11 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
                 selectable = false
             }
+
+            secondaryItem(R.string.drawer_item_alice) { icon = R.drawable.ic_keyboard_voice_grey_600; selectable = false }
             secondaryItem(R.string.title_activity_settings) { icon = R.drawable.ic_settings_grey_600; selectable = false }
             secondaryItem(R.string.drawer_item_about) { icon = R.drawable.ic_info_outline_grey_24dp; selectable = false }
-            if (BuildConfig.DEBUG) secondaryItem("Get SP") { icon = R.drawable.ic_bug_report_grey_600; selectable = false }
+            //if (BuildConfig.DEBUG) secondaryItem("Get SP") { icon = R.drawable.ic_bug_report_grey_600; selectable = false }
         }
 
         m.getFragmentLiveData().observeNotNull(this, Observer {
