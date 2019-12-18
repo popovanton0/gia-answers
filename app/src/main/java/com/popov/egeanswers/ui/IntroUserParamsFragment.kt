@@ -1,13 +1,13 @@
 package com.popov.egeanswers.ui
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import com.popov.egeanswers.R
 import com.popov.egeanswers.model.UserType
 import com.popov.egeanswers.viewmodel.IntroUserParamsViewModel
@@ -15,10 +15,6 @@ import kotlinx.android.synthetic.main.fragment_intro_user_params.*
 
 
 class IntroUserParamsFragment : Fragment() {
-
-    companion object {
-        fun newInstance() = IntroUserParamsFragment()
-    }
 
     private lateinit var m: IntroUserParamsViewModel
 

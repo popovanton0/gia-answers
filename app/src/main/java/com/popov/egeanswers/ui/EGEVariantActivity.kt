@@ -31,6 +31,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.AnswersAdapter
 import com.popov.egeanswers.Blur
 import com.popov.egeanswers.R
+import com.popov.egeanswers.util.observeNotNull
 import com.popov.egeanswers.viewmodel.EGEVariantViewModel
 import com.popov.egeanswers.viewmodel.VariantViewModelFactory
 import kotlinx.android.synthetic.main.activity_ege_variant.*
@@ -76,8 +77,7 @@ class EGEVariantActivity : AppCompatActivity() {
 
         supportActionBar?.title = getString(R.string.variant_ege) + varNumber.toString()
 
-        m.getPdfBytesLiveData().observe(this, Observer {
-            if (it == null) return@Observer
+        m.getPdfBytesLiveData().observeNotNull(this, Observer {
             // Hack because of a bug in PDFview; It crashes when you load a second PDF
             // https://github.com/JoanZapata/android-pdfview/issues/75#issuecomment-73664568
             val group = pdfView.parent as ViewGroup
@@ -110,15 +110,13 @@ class EGEVariantActivity : AppCompatActivity() {
         val part1Answers = mutableListOf<String>()
         answersView.adapter = AnswersAdapter(part1Answers)
 
-        m.getPart1AnswersLiveData().observe(this, Observer {
-            if (it == null) return@Observer
+        m.getPart1AnswersLiveData().observeNotNull(this, Observer {
             part1Answers.clear()
             part1Answers.addAll(it)
             answersView.adapter?.notifyDataSetChanged()
         })
 
-        m.loadWebView.observe(this, Observer {
-            if (it == null) return@Observer
+        m.loadWebView.observeNotNull(this, Observer {
             webView.settings.javaScriptEnabled = true
             webView.setNetworkAvailable(true)
 
@@ -166,13 +164,11 @@ class EGEVariantActivity : AppCompatActivity() {
             }
         })
 
-        m.share.observe(this, Observer {
-            if (it == null) return@Observer
+        m.share.observeNotNull(this, Observer {
             share(it)
         })
 
-        m.stopLoadingAnimation.observe(this, Observer {
-            if (it == null) return@Observer
+        m.stopLoadingAnimation.observeNotNull(this, Observer {
             varLoadingProgressBar.visibility = View.GONE
         })
 
@@ -216,8 +212,7 @@ class EGEVariantActivity : AppCompatActivity() {
                     else STATE_COLLAPSED
         }
 
-        m.isOffline.observe(this, Observer {
-            if (it == null) return@Observer
+        m.isOffline.observeNotNull(this, Observer {
             try {
                 menu.findItem(R.id.offline).icon =
                         ResourcesCompat.getDrawable(resources, if (it) R.drawable.ic_delete_white
@@ -226,16 +221,14 @@ class EGEVariantActivity : AppCompatActivity() {
             }
         })
 
-        m.downloadDone.observe(this, Observer {
-            if (it == null) return@Observer
+        m.downloadDone.observeNotNull(this, Observer {
             if (it) toast(R.string.variant_saved)
             else toast(R.string.variant_not_saved)
 
             menu.findItem(R.id.offline).isEnabled = true
         })
 
-        m.deletionDone.observe(this, Observer {
-            if (it == null) return@Observer
+        m.deletionDone.observeNotNull(this, Observer {
             if (it) toast(R.string.deletion_successful)
             else toast(R.string.deletion_failed)
 

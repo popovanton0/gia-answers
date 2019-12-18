@@ -14,6 +14,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var sp: SharedPreferences
     private var userClass: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)

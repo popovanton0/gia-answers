@@ -25,6 +25,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDE
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.AnswersAdapter
 import com.popov.egeanswers.R
+import com.popov.egeanswers.util.observeNotNull
 import com.popov.egeanswers.viewmodel.OGEVariantViewModel
 import com.popov.egeanswers.viewmodel.VariantViewModelFactory
 import kotlinx.android.synthetic.main.activity_oge_variant.*
@@ -68,8 +69,7 @@ class OGEVariantActivity : AppCompatActivity() {
 
         supportActionBar?.title = getString(R.string.variant_oge) + varNumber.toString()
 
-        m.getPdfBytesLiveData().observe(this, Observer {
-            if (it == null) return@Observer
+        m.getPdfBytesLiveData().observeNotNull(this, Observer {
             // Hack because of a bug in PDFview; It crashes when you load a second PDF
             // https://github.com/JoanZapata/android-pdfview/issues/75#issuecomment-73664568
             val group = pdfView.parent as ViewGroup
@@ -102,20 +102,17 @@ class OGEVariantActivity : AppCompatActivity() {
         val answers = mutableListOf<String>()
         answersView.adapter = AnswersAdapter(answers)
 
-        m.getAnswersLiveData().observe(this, Observer {
-            if (it == null) return@Observer
+        m.getAnswersLiveData().observeNotNull(this, Observer {
             answers.clear()
             answers.addAll(it)
             answersView.adapter?.notifyDataSetChanged()
         })
 
-        m.share.observe(this, Observer {
-            if (it == null) return@Observer
+        m.share.observeNotNull(this, Observer {
             share(it)
         })
 
-        m.stopLoadingAnimation.observe(this, Observer {
-            if (it == null) return@Observer
+        m.stopLoadingAnimation.observeNotNull(this, Observer {
             varLoadingProgressBar.visibility = View.GONE
         })
 
@@ -159,8 +156,7 @@ class OGEVariantActivity : AppCompatActivity() {
                     else STATE_COLLAPSED
         }
 
-        m.isOffline.observe(this, Observer {
-            if (it == null) return@Observer
+        m.isOffline.observeNotNull(this, Observer {
             try {
                 menu.findItem(R.id.offline).icon =
                         ResourcesCompat.getDrawable(resources, if (it) R.drawable.ic_delete_white
@@ -169,16 +165,14 @@ class OGEVariantActivity : AppCompatActivity() {
             }
         })
 
-        m.downloadDone.observe(this, Observer {
-            if (it == null) return@Observer
+        m.downloadDone.observeNotNull(this, Observer {
             if (it) toast(R.string.variant_saved)
             else toast(R.string.variant_not_saved)
 
             menu.findItem(R.id.offline).isEnabled = true
         })
 
-        m.deletionDone.observe(this, Observer {
-            if (it == null) return@Observer
+        m.deletionDone.observeNotNull(this, Observer {
             if (it) toast(R.string.deletion_successful)
             else toast(R.string.deletion_failed)
 

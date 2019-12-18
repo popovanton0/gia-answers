@@ -1,15 +1,8 @@
 package com.popov.egeanswers.ui
 
-import android.app.Activity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import androidx.fragment.app.Fragment
-import androidx.appcompat.app.AlertDialog
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -18,17 +11,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.EGEVariantsAdapter
 import com.popov.egeanswers.R
 import com.popov.egeanswers.model.VariantUI
+import com.popov.egeanswers.util.observeNotNull
 import com.popov.egeanswers.viewmodel.EGEVariantsViewModel
 import com.popov.egeanswers.viewmodel.MainViewModel
-import com.popov.egeanswers.viewmodel.VariantsViewModelFactory
 import kotlinx.android.synthetic.main.fragment_variants.*
-import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.support.v4.dip
-import org.jetbrains.anko.support.v4.startActivityForResult
 
 open class EGEVariantsFragment : Fragment() {
 
@@ -57,8 +53,7 @@ open class EGEVariantsFragment : Fragment() {
         variantsView.layoutManager = LinearLayoutManager(this.context)
         variantsView.adapter = EGEVariantsAdapter(this, variants)
 
-        m.variants.observe(this, Observer {
-            if (it == null) return@Observer
+        m.variants.observeNotNull(this, Observer {
             variants.clear()
             variants.addAll(it)
 
@@ -74,11 +69,9 @@ open class EGEVariantsFragment : Fragment() {
             variantsView.adapter?.notifyDataSetChanged()
         })
 
-        m.varsLoadingErrorSnackbar.observe(this, Observer {
-            if (it != null) {
-                variantsLoadingError(it)
-                variantsLoadingProgressBar.visibility = View.GONE
-            }
+        m.varsLoadingErrorSnackbar.observeNotNull(this, Observer {
+            variantsLoadingError(it)
+            variantsLoadingProgressBar.visibility = View.GONE
         })
 
         searchFAB.setOnClickListener {

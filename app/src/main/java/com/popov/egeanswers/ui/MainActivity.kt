@@ -1,8 +1,6 @@
 package com.popov.egeanswers.ui
 
 import android.app.ActivityManager
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.ComponentName
 import android.content.Intent
 import android.content.SharedPreferences
@@ -12,18 +10,20 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate.*
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import co.zsmb.materialdrawerkt.builders.accountHeader
 import co.zsmb.materialdrawerkt.builders.drawer
 import co.zsmb.materialdrawerkt.draweritems.badgeable.primaryItem
 import co.zsmb.materialdrawerkt.draweritems.badgeable.secondaryItem
 import co.zsmb.materialdrawerkt.draweritems.divider
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.mikepenz.materialdrawer.Drawer
-import com.popov.egeanswers.BuildConfig
 import com.popov.egeanswers.R
+import com.popov.egeanswers.util.observeNotNull
 import com.popov.egeanswers.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.*
@@ -137,13 +137,11 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
                 selectable = false
             }
             secondaryItem(R.string.title_activity_settings) { icon = R.drawable.ic_settings_grey_600; selectable = false }
-            secondaryItem(R.string.drawer_item_alice) { icon = R.drawable.ic_keyboard_voice_grey_600; selectable = false }
             secondaryItem(R.string.drawer_item_about) { icon = R.drawable.ic_info_outline_grey_24dp; selectable = false }
             if (BuildConfig.DEBUG) secondaryItem("Get SP") { icon = R.drawable.ic_bug_report_grey_600; selectable = false }
         }
 
-        m.getFragmentLiveData().observe(this, Observer {
-
+        m.getFragmentLiveData().observeNotNull(this, Observer {
             val fragment = when (userClass) {
                 8, 9 -> when (it) {
                     1 -> OGEVariantsFragment()
