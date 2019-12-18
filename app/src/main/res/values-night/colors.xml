@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#4CAF50</color>
+    <color name="colorPrimaryDark">#388E3C</color>
+    <color name="colorAccent">#FF5722</color>
+
+    <color name="download_and_share">#5FB662</color>
+    <color name="answers_text">#FFFFFF</color>
+    <!--<color name="download_and_share">#7FBB81</color>-->
+
+    <!-- OVERWRITE THESE COLORS FOR A DARK THEME -->
+    <!-- MaterialDrawer DEFAULT DARK colors -->
+    <color name="material_drawer_background">#303030</color>
+    <!-- MaterialDrawer DEFAULT DARK text / items colors -->
+    <color name="material_drawer_primary_text">#DEFFFFFF</color>
+    <color name="material_drawer_primary_icon">#8AFFFFFF</color>
+    <color name="material_drawer_secondary_text">#8AFFFFFF</color>
+    <color name="material_drawer_hint_text">#42FFFFFF</color>
+    <color name="material_drawer_divider">#1FFFFFFF</color>
+    <!-- MaterialDrawer DEFAULT DARK drawer colors -->
+    <color name="material_drawer_selected">#1F4CAF50</color>
+    <color name="material_drawer_selected_legacy">#202020</color>
+    <color name="material_drawer_selected_text">@color/material_drawer_primary</color>
+    <color name="material_drawer_header_selection_text">#FFFFFFFF</color>
+    <color name="material_drawer_header_selection_subtext">#B3FFFFFF</color>
+</resources>
