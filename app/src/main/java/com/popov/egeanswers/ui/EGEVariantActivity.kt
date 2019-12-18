@@ -2,8 +2,6 @@ package com.popov.egeanswers.ui
 
 import android.annotation.SuppressLint
 import android.app.ActivityManager
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
@@ -11,12 +9,6 @@ import android.graphics.*
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
-import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
-import androidx.core.content.res.ResourcesCompat
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -26,17 +18,22 @@ import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationUtils
 import android.webkit.JavascriptInterface
 import android.widget.ImageView
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.barteksc.pdfviewer.PDFView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.popov.egeanswers.AnswersAdapter
 import com.popov.egeanswers.Blur
 import com.popov.egeanswers.R
-import com.popov.egeanswers.util.nightMode
 import com.popov.egeanswers.viewmodel.EGEVariantViewModel
 import com.popov.egeanswers.viewmodel.VariantViewModelFactory
 import kotlinx.android.synthetic.main.activity_ege_variant.*
-import kotlinx.coroutines.*
 import org.jetbrains.anko.configuration
 import org.jetbrains.anko.share
 import org.jetbrains.anko.toast
@@ -131,34 +128,30 @@ class EGEVariantActivity : AppCompatActivity() {
 
         m.getPart2AnswersBytesLiveData().observe(this, Observer {
             if (it == null) return@Observer
-            part2answersImageView.setOnClickListener { }
+            part2answersImageView.setOnClickListener(null)
 
             var onClick: View.OnClickListener? = null
             onClick = View.OnClickListener {
-                part2answersImageView.setOnClickListener { }
+                part2answersImageView.setOnClickListener(null)
 
-                val isBlurring = showPart2answersTextView.visibility != View.VISIBLE
+                val isBlurred = showPart2answersTextView.visibility == View.VISIBLE
                 val unBlurredImageBitmap = getAnswersBitmap(m.getPart2AnswersBytesLiveData().value, isDarkMode)
                         ?: return@OnClickListener
 
-                if (isBlurring) {
+                if (isBlurred) {
+                    showPart2answersTextView.visibility = View.GONE
+
+                    setImageWithAnimation(part2answersImageView, unBlurredImageBitmap) {
+                        part2answersImageView.setOnClickListener(onClick)
+                    }
+                } else {
                     val blurredImageBitmap = Blur.blur(this, unBlurredImageBitmap)
-                    part2answersImageView.setOnClickListener { }
                     setImageWithAnimation(part2answersImageView, blurredImageBitmap) {
                         showPart2answersTextView.visibility = View.VISIBLE
                         part2answersImageView.setOnClickListener(onClick)
                     }
-                } else {
-                    showPart2answersTextView.visibility = View.GONE
-
-                    part2answersImageView.setOnClickListener { }
-                    setImageWithAnimation(part2answersImageView, unBlurredImageBitmap) {
-                        part2answersImageView.setOnClickListener(onClick)
-                    }
                 }
             }
-
-            part2answersImageView.setOnClickListener { }
 
             val unBlurredImageBitmap = getAnswersBitmap(m.getPart2AnswersBytesLiveData().value, isDarkMode)
                     ?: return@Observer
