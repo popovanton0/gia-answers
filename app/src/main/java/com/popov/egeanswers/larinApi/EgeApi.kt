@@ -46,8 +46,15 @@ class EgeApi : LarinApi() {
         require(year >= EGE_START_YEAR)
         val url = if (number >= 285) "$baseUrl/ege/$year/trvar${number}_0.png"
         else "$baseUrl/ege/$year/trvar$number.png"
+
         var response = okHttpClient
                 .urlCall(url)
+                .execute("Can`t get part 2 answers from $baseUrl") { response, errorMsg ->
+                    Triple(response.body()?.bytes(), response.code(), errorMsg)
+                }
+        // 404 because another url pattern is used (.../trvar290.png)
+        if (response.second == 404) response = okHttpClient
+                .urlCall("$baseUrl/ege/$year/trvar$number.png")
                 .execute("Can`t get part 2 answers from $baseUrl") { response, errorMsg ->
                     Triple(response.body()?.bytes(), response.code(), errorMsg)
                 }
