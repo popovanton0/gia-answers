@@ -52,6 +52,7 @@ class EGEVariantsViewModel(private val isOfflineOnly: Boolean, private val app: 
     }
 
     init {
+        _variants.value = emptyList()
         varsLoadingJob = viewModelScope.launch(Dispatchers.Main) {
             try {
                 // 'currentYear + 1' because of september - december posts of (year + 1) variants
